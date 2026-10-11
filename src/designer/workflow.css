@@ -1,0 +1,108 @@
+/* Permanent navigation lives in one header; the inspector only configures. */
+.ps-app.ps-workflow{grid-template-columns:268px minmax(0,1fr);grid-template-rows:44px minmax(0,1fr);height:100dvh;overflow:hidden}
+.ps-app.ps-workflow.ps-panel-collapsed{grid-template-columns:0 minmax(0,1fr)}
+.ps-app.ps-workflow [hidden]{display:none!important}
+.ps-app.ps-workflow .ps-header{padding:0 12px;justify-content:flex-start;gap:16px}
+.ps-app.ps-workflow .ps-brand{font-size:15px;gap:7px;flex-shrink:0}
+.ps-app.ps-workflow .ps-brand small,.ps-app.ps-workflow .ps-header-center{display:none}
+.ps-app.ps-workflow .ps-logo{width:27px;height:27px;font-size:21px;border-radius:6px}
+.ps-header-project{width:210px;min-width:70px;border:0;border-left:1px solid #dce4d7;background:transparent;padding:5px 12px;color:#20362c;font-weight:600;font-size:12px}
+.ps-app.ps-workflow .ps-header-actions{gap:5px}
+.ps-app.ps-workflow .ps-header-actions button{padding:6px 10px;font-size:10px}
+.ps-app.ps-workflow .ps-sidebar{grid-column:1;grid-row:2;display:flex;flex-direction:column;overflow:hidden;padding:0;background:#fff;min-height:0}
+.ps-inspector-heading{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-shrink:0;padding:12px 16px;border-bottom:1px solid #e2e8df;font-size:12px}
+.ps-app.ps-workflow .ps-inspector-heading button{padding:4px 7px;font-size:10px}
+.ps-step-body{overflow:auto;flex:1;min-height:0;padding:14px 16px;scrollbar-width:thin}
+.ps-app.ps-workflow .ps-sidebar section{border:0;padding:0;margin:0 0 18px}
+.ps-app.ps-workflow .ps-sidebar h2{font-size:12px;margin:0 0 10px}
+.ps-app.ps-workflow .ps-field{margin-top:10px}
+.ps-app.ps-workflow .ps-field>span{font-size:10px;margin-bottom:5px}
+.ps-app.ps-workflow .ps-field input,.ps-app.ps-workflow .ps-field select{height:33px;font-size:11px}
+.ps-app.ps-workflow .ps-help{font-size:10px;line-height:1.5;margin-top:8px}
+.ps-app.ps-workflow .ps-shapes{gap:4px;margin-bottom:12px}
+.ps-app.ps-workflow .ps-shapes button{padding:7px 2px}
+.ps-app.ps-workflow .ps-shapes i{font-size:19px;margin-bottom:3px;line-height:20px}
+.ps-app.ps-workflow .ps-library-gallery>div{grid-template-columns:repeat(4,1fr)}
+.ps-app.ps-workflow .ps-library-gallery button{padding:5px 2px;font-size:9px}
+.ps-app.ps-workflow .ps-library-gallery img{width:38px;height:38px}
+.ps-app.ps-workflow .ps-library-gallery{margin:10px 0}
+.ps-advanced{margin:12px 0 0;border-top:1px solid #e2e8df;padding-top:9px;font-size:10px}
+.ps-advanced>summary{cursor:pointer;font-weight:600;color:#576d5d;line-height:1.5}
+.ps-app.ps-workflow summary:focus-visible{outline:2px solid #d47743;outline-offset:3px}
+.ps-task-note,.ps-mount-status{font-size:10px;line-height:1.5;background:#eff3eb;padding:10px;border-radius:6px;margin:10px 0}
+.ps-mount-status{background:#fff4df;border:1px solid #ecd6ac;color:#77511d}
+.ps-mount-status p{margin:5px 0 0}
+.ps-mount-status.ps-mount-ready{background:#edfaf7;border-color:#afe0d5;color:#286558}
+.ps-app.ps-workflow .ps-import-button,.ps-app.ps-workflow .ps-wide-button{width:100%;margin-top:10px;padding:8px;font-size:10px}
+.ps-app.ps-workflow .ps-diffuser-note{display:none}
+.ps-step-footer{display:flex;justify-content:flex-start;gap:8px;flex-shrink:0;border-top:1px solid #e2e8df;padding:10px 12px;background:#fff}
+.ps-app.ps-workflow .ps-step-footer button{width:100%;padding:9px}
+.ps-app.ps-workflow .ps-mobile-close{display:none}
+.ps-app.ps-workflow .ps-main{grid-column:2;grid-row:2;min-height:0;height:auto}
+.ps-app.ps-workflow .ps-workspace-bar,.ps-app.ps-workflow .ps-workspace-bar.ps-workspace-3d{height:auto;min-height:43px;padding:5px 10px;gap:8px;justify-content:flex-start;flex-wrap:wrap;overflow:visible;flex-shrink:0}
+.ps-app.ps-workflow .ps-workspace-heading{display:none}
+.ps-app.ps-workflow .ps-panel-toggle{font-size:10px;padding:6px 8px;background:transparent}
+.ps-app.ps-workflow .ps-view-tabs{padding:3px;gap:2px}
+.ps-app.ps-workflow .ps-view-tabs button{font-size:10px;padding:6px 9px}
+.ps-app.ps-workflow .ps-canvas-tools:not([hidden]){flex-basis:auto;justify-content:flex-start;gap:2px}
+.ps-app.ps-workflow .ps-canvas-tools button{padding:6px 8px;font-size:10px}
+.ps-app.ps-workflow .ps-three-toolbar-slot{flex-basis:auto;min-width:0}
+.ps-app.ps-workflow .ps-three-toolbar{position:static;display:flex;justify-content:flex-start;flex-wrap:nowrap;white-space:nowrap;gap:5px}
+.ps-app.ps-workflow .ps-layout-summary{padding:4px 10px;gap:12px;min-height:22px;flex-wrap:nowrap;white-space:nowrap;overflow:auto}
+.ps-app.ps-workflow .ps-design-svg,.ps-app.ps-workflow .ps-bed-svg{height:calc(100% - 36px);margin:0 0 36px;max-width:100%;width:100%}
+.ps-app.ps-workflow .ps-three-stage{inset:0 0 38px}
+.ps-app.ps-workflow .ps-three-info{left:10px;bottom:43px;font-size:9px;max-width:calc(100% - 20px);padding:3px 5px;background:#f5f7f0dd;border-radius:4px}
+.ps-app.ps-workflow .ps-three-info small{display:none}
+.ps-app.ps-workflow .ps-three-bottom{left:10px;right:10px;bottom:6px;justify-content:flex-start}
+.ps-app.ps-workflow .ps-three-bottom>span{display:none}
+.ps-app.ps-workflow .ps-three-bottom button{padding:6px 8px}
+.ps-app.ps-workflow .ps-canvas-bottom{left:10px;right:10px;bottom:6px;justify-content:flex-start;gap:16px}
+.ps-app.ps-workflow .ps-section-strip{min-height:45px;padding:6px 10px}
+.ps-app.ps-workflow .ps-toast{bottom:50px;font-size:11px}
+.ps-app.ps-workflow{--ink:#30234d;--accent:#7544df;color:var(--ink);background:#f8f7fc;grid-template-rows:auto minmax(0,1fr)}
+.ps-app.ps-workflow .ps-header{min-height:52px;gap:7px;flex-wrap:wrap;padding:6px 10px;background:#fff;border-bottom:2px solid #e7dcff;z-index:10}
+.ps-app.ps-workflow .ps-brand{color:#513098;margin-right:6px}
+.ps-app.ps-workflow .ps-logo{background:linear-gradient(140deg,#824ce8,#ed588c);color:#fff;box-shadow:0 2px 8px #7544df30}
+.ps-app.ps-workflow .ps-view-tabs{background:#f0e9fc;border-radius:9px;flex-shrink:0}
+.ps-app.ps-workflow .ps-view-tabs button{font-size:11px;padding:7px 11px;color:#634581}
+.ps-app.ps-workflow .ps-view-tabs button.active{background:#7544df;color:white;box-shadow:0 2px 5px #7544df25}
+.ps-app.ps-workflow .ps-view-tabs button.active:hover:not(:disabled){background:#6535c8;color:#fff}
+.ps-app.ps-workflow .ps-header-project{width:140px;flex:1;max-width:200px;order:5;color:#513c70}
+.ps-app.ps-workflow .ps-header-actions{order:6;margin-left:auto}
+.ps-app.ps-workflow .ps-three-toolbar-slot,.ps-app.ps-workflow .ps-canvas-tools{order:4}
+.ps-app.ps-workflow .ps-three-toolbar label>span{display:none}
+.ps-app.ps-workflow .ps-three-toolbar button,.ps-app.ps-workflow .ps-three-toolbar select{font-size:10px;padding:5px 7px;max-width:125px}
+.ps-app.ps-workflow button{color:#513c70;border-color:#ddd4ec;border-radius:7px}
+.ps-app.ps-workflow button:hover:not(:disabled){background:#f0e7ff;border-color:#ad8ae9}
+.ps-app.ps-workflow button.active,.ps-app.ps-workflow .ps-shapes button.active{background:#eee4ff;border-color:#9569e3;color:#6530b5}
+.ps-app.ps-workflow .ps-primary{background:#7544df;color:#fff;border-color:#7544df}
+.ps-app.ps-workflow .ps-primary:hover:not(:disabled){background:#6535c8;color:#fff}
+.ps-app.ps-workflow input:focus-visible,.ps-app.ps-workflow select:focus-visible,.ps-app.ps-workflow button:focus-visible{outline:2px solid #8d5ae7;outline-offset:2px}
+.ps-app.ps-workflow .ps-inspector-heading{background:#f5efff;color:#6742a3;padding:10px 16px}
+.ps-app.ps-workflow .ps-task-note{background:#edf9fa;color:#325d68;border-left:3px solid #39b7c5}
+.ps-app.ps-workflow .ps-canvas{background:#f8f9fb}
+.ps-app.ps-workflow .ps-main{position:relative}
+.ps-app.ps-workflow .ps-layout-summary{position:absolute;left:8px;bottom:40px;z-index:2;border:0;border-radius:5px;background:#ffffffda;font-size:9px;pointer-events:none;max-width:calc(100% - 16px);min-height:0;padding:3px 6px}
+.ps-app.ps-workflow .ps-three-info{bottom:43px}
+.ps-app.ps-workflow .ps-export-menu{right:0;min-width:260px;max-height:80dvh;overflow:auto;box-shadow:0 8px 30px #49316926}
+@media(max-width:700px){
+ .ps-app.ps-workflow,.ps-app.ps-workflow.ps-panel-collapsed{height:100dvh;min-height:0;grid-template-columns:0 minmax(0,1fr);grid-template-rows:43px minmax(0,1fr);overflow:hidden}
+ .ps-app.ps-workflow .ps-header{position:relative;padding:0 7px;gap:8px}
+ .ps-app.ps-workflow .ps-brand{font-size:12px}.ps-app.ps-workflow .ps-logo{width:24px;height:24px}
+ .ps-header-project{display:none}
+ .ps-app.ps-workflow .ps-header-actions{gap:3px}.ps-app.ps-workflow .ps-header-actions button{font-size:10px;padding:6px 7px}
+ .ps-app.ps-workflow .ps-sidebar{position:relative;top:auto;bottom:auto;left:auto;height:100%;width:min(290px,88vw);z-index:6;box-shadow:12px 0 35px #20362c30;border-top:0}
+ .ps-app.ps-workflow .ps-mobile-close{display:block;flex-shrink:0;text-align:right;border:0;border-radius:0;font-size:11px;padding:8px 12px;background:#f1f4ec}
+ .ps-app.ps-workflow .ps-workspace-bar,.ps-app.ps-workflow .ps-workspace-bar.ps-workspace-3d{padding:5px 7px;gap:5px;min-height:42px}
+ .ps-app.ps-workflow .ps-view-tabs button{font-size:10px;padding:6px 7px}
+ .ps-app.ps-workflow .ps-layout-summary{font-size:9px;gap:10px;padding:4px 7px}
+ .ps-app.ps-workflow .ps-three-bottom{left:7px;right:7px;flex-wrap:nowrap}
+ .ps-app.ps-workflow .ps-three-bottom button{padding:6px;font-size:9px}
+ .ps-app.ps-workflow .ps-key{display:none}
+ .ps-app.ps-workflow{grid-template-rows:auto minmax(0,1fr)}
+ .ps-app.ps-workflow .ps-brand>span:last-child{display:none}
+ .ps-app.ps-workflow .ps-header{min-height:48px;gap:4px;flex-wrap:wrap}
+ .ps-app.ps-workflow .ps-view-tabs button{padding:6px 8px}
+ .ps-app.ps-workflow .ps-sidebar{top:auto}
+ .ps-app.ps-workflow .ps-three-toolbar-slot{width:100%;order:8}
+}

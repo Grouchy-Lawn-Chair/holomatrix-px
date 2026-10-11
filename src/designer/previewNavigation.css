@@ -1,0 +1,6 @@
+.ps-app .ps-three-bottom>div{flex-wrap:wrap}
+.ps-app .ps-three-bottom>span{font-size:10px}
+.ps-app .ps-workspace-bar.ps-workspace-3d{flex-wrap:wrap;overflow:visible;height:auto;min-height:80px;padding-top:9px;padding-bottom:9px;row-gap:8px}
+.ps-workspace-3d .ps-three-toolbar-slot{flex-basis:100%;min-width:0}
+.ps-workspace-3d .ps-three-toolbar{flex-wrap:wrap;white-space:normal}
+.ps-app .ps-three-info{right:25px}

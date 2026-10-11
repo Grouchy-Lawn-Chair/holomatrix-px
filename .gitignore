@@ -1,0 +1,13 @@
+node_modules/
+dist/
+*.local
+*.log
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+.DS_Store
+public/samples/
+public/prop-library/
+*.blend1
+__pycache__/
+public-release-check/
