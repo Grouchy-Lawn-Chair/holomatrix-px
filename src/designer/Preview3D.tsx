@@ -28,13 +28,14 @@ import {emtCompatible,emtMountParts} from './emtHardware'
 import marioUrl from '../../diffuser_references/mario_25_08mm.stl?url'
 import houseUrl from '../../diffuser_references/house_33mm.stl?url'
 import './previewNavigation.css'
+import {createHolodeck} from './holodeck'
 
 const colors=['#9cbd9b','#e5b27c','#8cb6b8','#b7a6cc','#d9948d','#c4bd7f']
-type Props={settings:Settings;layout:ReturnType<typeof generate>;selected:number;onSelect:(n:number)=>void;toolbarTarget:HTMLDivElement|null;showFrameGuides?:boolean}
-type ViewAngle='angle'|'front'|'back'
+type Props={settings:Settings;layout:ReturnType<typeof generate>;selected:number;onSelect:(n:number)=>void;toolbarTarget:HTMLDivElement|null;showFrameGuides?:boolean;materializeRequest?:number}
+type ViewAngle='angle'|'front'|'back'|'floor'|'ceiling'
 type Viewer={fit:(angle?:ViewAngle)=>void;focus:()=>void;clearSelection:()=>void;caps:THREE.Group;render:()=>void;resetMoves:()=>void;explodeJoint:(enabled:boolean,separate?:boolean,animate?:boolean)=>void;setLights:(enabled:boolean)=>void}
 
-export default function Preview3D({settings,layout,selected,onSelect,toolbarTarget,showFrameGuides=false}:Props) {
+export default function Preview3D({settings,layout,selected,onSelect,toolbarTarget,showFrameGuides=false,materializeRequest=0}:Props) {
   const host=useRef<HTMLDivElement>(null), viewer=useRef<Viewer|null>(null)
   const [part,setPart]=useState(false),[caps,setCaps]=useState(true),[exploded,setExploded]=useState(false)
   const [separateSections,setSeparateSections]=useState(false)
@@ -45,6 +46,7 @@ export default function Preview3D({settings,layout,selected,onSelect,toolbarTarg
   const separated=exploded&&separateSections&&!part&&!jointMode
   const [status,setStatus]=useState('Loading your diffuser…'),[error,setError]=useState('')
   const options=useRef({caps,exploded,separated,lights});options.current={caps,exploded,separated,lights}
+  useEffect(()=>{if(materializeRequest){setExploded(false);setSeparateSections(false);setJointMode(false);setPart(false)}},[materializeRequest])
   useEffect(()=>{
     const element=host.current!
     let renderer:THREE.WebGLRenderer
@@ -53,7 +55,7 @@ export default function Preview3D({settings,layout,selected,onSelect,toolbarTarg
     setError('');setStatus(jointMode?'Loading R2 joint test…':'Loading your diffuser…')
     setAssemblyWarning('')
     renderer.setPixelRatio(Math.min(window.devicePixelRatio,2))
-    renderer.setClearColor(0xf5f7f0,0)
+    renderer.setClearColor(0x080d15,1)
     renderer.outputColorSpace=THREE.SRGBColorSpace
     renderer.toneMapping=THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure=1
@@ -89,11 +91,12 @@ export default function Preview3D({settings,layout,selected,onSelect,toolbarTarg
     const display=bounds(cells.map(p=>{const offset=offsets.get(p.section)!;return{x:p.x+offset.x/size,y:p.y-offset.y/size}}))
     const fitX=((display.minX+display.maxX)/2-centerX)*size,fitY=-((display.minY+display.maxY)/2-centerY)*size
     const span=Math.max(b.width*size,b.height*size,50),explode=Math.max(100,span*.09)
+    const holodeck=createHolodeck(span);scene.add(holodeck.group)
     const geometries:THREE.BufferGeometry[]=[],materials:THREE.Material[]=[]
     const composer=new EffectComposer(renderer),scenePass=new RenderPass(scene,camera)
     const bloom=new UnrealBloomPass(new THREE.Vector2(1,1),.25,.1,.9),output=new OutputPass()
     composer.addPass(scenePass);composer.addPass(bloom);composer.addPass(output)
-    const render=()=>{outline?.update();if(lightsEnabled)composer.render();else renderer.render(scene,camera)}
+    const render=()=>{holodeck.follow(camera);outline?.update();if(lightsEnabled)composer.render();else renderer.render(scene,camera)}
     const glowing:{material:THREE.MeshStandardMaterial;base:THREE.Color;index:number;art?:THREE.Color}[]=[]
     let lightFrame:number|undefined,lightsEnabled=false,lastLightFrame=0
     const stopLights=()=>{if(lightFrame!==undefined)cancelAnimationFrame(lightFrame);lightFrame=undefined}
@@ -113,7 +116,7 @@ export default function Preview3D({settings,layout,selected,onSelect,toolbarTarg
     }
     const setLights=(enabled:boolean)=>{
       stopLights();lightsEnabled=enabled
-      scene.background=enabled?new THREE.Color(0x080d19):null
+      scene.background=new THREE.Color(0x080d15)
       ambient.intensity=enabled?.2:1.7;light.intensity=enabled?.35:2;fill.intensity=enabled?.15:1.2
       updateLights(performance.now());render()
       if(enabled&&!document.hidden)lightFrame=requestAnimationFrame(runLights)
@@ -190,11 +193,12 @@ export default function Preview3D({settings,layout,selected,onSelect,toolbarTarg
     }
     const fit=(next:ViewAngle=angle)=>{
       angle=next
-      const direction=next==='front'?new THREE.Vector3(0,0,-1):next==='back'?new THREE.Vector3(0,0,1):new THREE.Vector3(.6,-.55,1).normalize()
+      const direction=next==='front'?new THREE.Vector3(0,0,-1):next==='back'?new THREE.Vector3(0,0,1):next==='floor'?new THREE.Vector3(.65,.25,1).normalize():next==='ceiling'?new THREE.Vector3(.65,1.2,1).normalize():new THREE.Vector3(.6,.55,1).normalize()
       model.updateMatrixWorld(true)
       const fitBox=new THREE.Box3()
       model.children.filter(child=>child.visible).forEach(child=>fitBox.expandByObject(child))
       if(fitBox.isEmpty())fitBox.setFromCenterAndSize(new THREE.Vector3(fitX,fitY,12),new THREE.Vector3(display.width*size,display.height*size,explode+50))
+      holodeck.ground(fitBox.min.y)
       frame(fitBox,direction)
     }
     const focus=()=>{
@@ -353,13 +357,17 @@ export default function Preview3D({settings,layout,selected,onSelect,toolbarTarg
         if(plates.some(p=>!joinedDiffuserFits(p,settings)))setAssemblyWarning('A joined seam diffuser exceeds the usable print bed. Reduce rows or increase the bed; parts are not scaled.')
         setStatus(`${cells.filter(p=>p.led!==false).length} lights · ${visibleJoins.length} merged seam diffusers · ${visible.length} trays · ${seamClips.filter(p=>offsets.has(p.a.section)||offsets.has(p.b.section)).length} seam clips · ${ties.filter(t=>offsets.has(t.pixel.section)).length} frame tie slots${conduitClipPlan(layout.pixels,settings).length?' · '+conduitClipPlan(layout.pixels,settings).length+' conduit mounts':''}`)
         fit()
+        if(materializeRequest>0&&!options.current.exploded&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+          // Display-only assembly; home poses and exported triangles stay untouched.
+          explodeJoint(true,false,false);explodeJoint(false,false,true)
+        }
         render()
       } catch(cause) {if(!disposed)setError(cause instanceof Error?cause.message:'Could not load 3D preview.')}
     })()
     const contextLost=(event:Event)=>{event.preventDefault();setError('The 3D graphics session was interrupted. Switch to Design and back to retry.')}
     renderer.domElement.addEventListener('webglcontextlost',contextLost)
     return ()=>{
-      disposed=true;stopMotion();stopLights();document.removeEventListener('visibilitychange',onVisibility);abort.abort();observer.disconnect();controls.dispose();transform.dispose();viewer.current=null
+      disposed=true;stopMotion();stopLights();holodeck.dispose();document.removeEventListener('visibilitychange',onVisibility);abort.abort();observer.disconnect();controls.dispose();transform.dispose();viewer.current=null
       if(outline){outline.geometry.dispose();(outline.material as THREE.Material).dispose()}
       renderer.domElement.removeEventListener('pointerdown',onPointerDown)
       renderer.domElement.removeEventListener('pointerup',onPointerUp)
@@ -370,7 +378,7 @@ export default function Preview3D({settings,layout,selected,onSelect,toolbarTarg
       bloom.dispose();output.dispose();scenePass.dispose();composer.dispose()
       renderer.dispose();renderer.forceContextLoss();renderer.domElement.remove()
     }
-  },[settings,layout,part,part?selected:-1,jointMode,showFrameGuides])
+  },[settings,layout,part,part?selected:-1,jointMode,showFrameGuides,materializeRequest])
   useEffect(()=>{const v=viewer.current;if(v){v.caps.visible=caps;if(!caps&&!jointMode)v.clearSelection();v.render()}},[caps,jointMode])
   useEffect(()=>{viewer.current?.explodeJoint(exploded,separated,true)},[exploded,separated])
   useEffect(()=>{viewer.current?.setLights(lights&&!jointMode&&caps)},[lights,jointMode,caps])
@@ -385,6 +393,6 @@ export default function Preview3D({settings,layout,selected,onSelect,toolbarTarg
     </div>,toolbarTarget)}
     <div ref={host} className="ps-three-stage"/>
     {error?<div role="alert" className="ps-three-error">{error}</div>:<div className="ps-three-info"><span role="status">{activePiece||status} · prototype</span><small>{assemblyWarning|| (jointMode?'Standalone legacy R2 coupon · not used by direct ties':settings.shape==='sprite'?'Support every section independently on the frame · derived conduit mounts need a physical PETG fit test · check tie access and wiring clearance':'PVC supports every section · reinforced wall slots for zip ties · green seam bridges + keeper ties · cables over walls · check pixel/wire clearance before tightening')}</small></div>}
-    <div className="ps-three-bottom"><span>Wall tie slots: {wallTieSpec.width} × {wallTieSpec.height} mm · Click: select · middle: pan · right: orbit · F: focus</span><div><button disabled={!activePiece} onClick={()=>viewer.current?.focus()}>Focus</button><button onClick={()=>viewer.current?.fit('front')}>Front</button><button onClick={()=>viewer.current?.fit('back')}>Back</button><button onClick={()=>viewer.current?.fit('angle')}>Angle</button><button onClick={()=>viewer.current?.fit()}>Fit</button><button onClick={resetAssembly}>Reset assembly</button></div></div>
+    <div className="ps-three-bottom"><span>Wall tie slots: {wallTieSpec.width} × {wallTieSpec.height} mm · Click: select · middle: pan · right: orbit · F: focus</span><div><button disabled={!activePiece} onClick={()=>viewer.current?.focus()}>Focus</button><button onClick={()=>viewer.current?.fit('front')}>Front</button><button onClick={()=>viewer.current?.fit('back')}>Back</button><button onClick={()=>viewer.current?.fit('angle')}>Angle</button><button onClick={()=>viewer.current?.fit('floor')}>Deck view</button><button onClick={()=>viewer.current?.fit('ceiling')}>Ceiling view</button><button onClick={()=>viewer.current?.fit()}>Fit</button><button onClick={resetAssembly}>Reset assembly</button></div></div>
   </div>
 }

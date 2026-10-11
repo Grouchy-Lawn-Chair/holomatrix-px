@@ -1,8 +1,26 @@
-# HoloMatrix PX
+# HoloProp Matrix
 
-## Public HoloMatrix PX deployment
+Developed by **Lawnchair Labs**. *From pixels to props, automagically.*
 
-GitHub Pages opens HoloMatrix PX at the repository root. The permanent header
+The original modeling, mounting, wiring and fabrication pipeline is retained.
+Pattern Matrix is the precise, flat pixel editor; Holo Preview adds a real
+six-sided amber-grid room, including floor and ceiling. Materialize regenerates
+the preview with display-only assembly choreography (reduced-motion respected).
+Replicator Output holds the existing printable sections and bed settings.
+The original vector emblem and dark console graphics do not use franchise art.
+
+### Your private prop library
+
+The 23 supplied images remain in the local workspace but are not redistributed
+on the public site. Choose Props → Import prop pack (ZIP) to restore the entire
+original archive privately. Small PNG/BMP/JPEG/WebP images (up to 48 × 48) are
+saved in this browser's local storage, not uploaded; black remains occupied and
+alpha stays empty. Larger sheets still use the existing crop/image importer.
+Import on each device separately. Clearing browser data also clears this library.
+
+## Public HoloProp Matrix deployment
+
+GitHub Pages opens HoloProp Matrix at the repository root. The permanent header
 contains Design, 3D, Wiring, Print and File; the sidebar contains configuration.
 Pages builds use `PAGES_BASE=/holomatrix-px/ VITE_PAGES=true npm run build`
 (set environment variables using your shell). The deployment workflow builds
@@ -18,7 +36,7 @@ The original supplied sprite library remains available locally. No license to
 redistribute it is inferred. Printable mounts are prototypes: print one PETG
 fit sample before production; geometry checks do not certify physical strength.
 
-## HoloMatrix PX
+## HoloProp Matrix
 
 ### Sprite prop builder (current release)
 
@@ -123,7 +141,7 @@ The separate `/designer` route is a local, procedural pixel-prop designer. Run
 the same development server and open `http://localhost:4173/designer` (or the
 port printed by Vite). The existing planner remains at `/`.
 
-HoloMatrix PX includes arch and line presets, a freehand path canvas with
+HoloProp Matrix includes arch and line presets, a freehand path canvas with
 draggable points, target pixel-count resizing, 1–8 offset rows, the measured
 25.08 mm Mario and 33 mm house diffuser presets, full-edge grid connectivity,
 circle/rectangle printer-bed limits, connected section packing, wiring and
@@ -189,7 +207,7 @@ The app saves the current project in browser local storage. Use **Export** to cr
 
 ## Included first vertical slice
 
-## HoloMatrix PX prop workflow
+## HoloProp Matrix prop workflow
 
 `/designer` uses a contextual inspector: choose **Arch / Line / Draw / Props**, then configure the relevant dimensions, LEDs and diffuser. Adjacent **Design / 3D / Wiring / Print** views share the same work area; support controls appear in 3D rather than a separate Mount wizard step. Advanced fit, joint, and printer measurements are collapsed; Hide controls expands the work area. Wiring opens point-to-point navigation and power planning together. Projects retain local autosave and JSON import/export.
 

@@ -53,7 +53,7 @@ export async function buildDirectTieFiles(s:Settings,sample=false){
   files.push(text('WALL_TIES.txt',`Straight and curved PVC are the continuous backbone. Tie EVERY section to the pipe independently; glue and merged front diffusers align seams, not the primary weight-bearing structure.\nSlots ${wallTieSpec.width} x ${wallTieSpec.height} mm, beginning ${wallTieSpec.z} mm above the floor. Each has a ${wallTieSpec.padWidth} x ${wallTieSpec.padHeight} mm integral inward pad adding ${wallTieSpec.padThickness} mm to the 2 mm wall. Pads have a 45-degree bottom ramp (1.5 mm rise for 1.5 mm inward projection). Slot roofs bridge ${wallTieSpec.width} mm between supported ends in floor-down orientation. Confirm in slicer; bridge quality not physically verified.\nPaired slots cross exposed outer walls, with extra stations targeting gaps over ${wallTieSpec.spacing} mm. Small sections may have only one opposed pair: use an additional tie/station if they twist.\nPass tie through opposed wall slots and around PVC, keeping its head accessible. Do not trap wiring or bear the PVC on pixel bodies. Actual pipe position, tie routing and clearance depend on the installed pixels and must be checked before tightening. Use a local spacer only where needed. Do not overtighten or distort walls. UV-suitable ties, retention, creep, wind load and existing top/foot anchorage require physical testing; no load rating.\n${sections.map(c=>`Section ${c[0].section+1}: ${ties.filter(t=>t.pixel.section===c[0].section).length} reinforced wall slots.`).join('\n')}`))
   if(s.capFit==='extended')files.push(text('LONG_TEETH.txt','3.5 mm seating teeth through a flat 2.1 mm floor. Unchanged configurable socket clearance; no raised pixel-retention pads.'))
   if(s.lighting==='strip'){const sp=stripSpec(s);files.push(text('STRIP_README.txt',`30 LEDs/m ${s.stripType??'ip30'} prototype: channel width ${sp.channelWidth} mm. NO bullet-pixel holes. Purchased strip rating is not this printed enclosure. 33.333 mm nominal LED pitch versus 33 mm touching diffuser centers; test accumulated alignment, legal cut points, and wiring at staircase turns.`))}
-  files.push(text('project.holomatrix-px.json',JSON.stringify(s,null,2)))
+  files.push(text('project.holoprop-matrix.json',JSON.stringify(s,null,2)))
   if(sample)files.push(text('FIT_SAMPLE.txt','Two unscaled short trays, integral wall zip-tie slots, one merged diffuser. Seam bridge clips included. Large seam windows closed; cables route over walls. Test the actual PVC, pixels, ties and cable routing before a full print.'))
   if(!sample){
     files.push(...buildPropFiles(s))
@@ -69,10 +69,10 @@ export async function buildDirectTieFiles(s:Settings,sample=false){
     }
     if(s.shape==='sprite'&&typeof document!=='undefined')files.push({name:'artwork.png',bytes:await spritePng(s.sprite!)})
     if(s.shape==='sprite')files.push(text('WIRING_README.txt','Read XLIGHTS_README.txt and STRINGS.csv. Each string is a separate data feed. No route crosses empty cells. Follow actual from_pixel/to_pixel values, not CSV row numbers. The route is a conservative path cover, not a minimum-port guarantee. Support disconnected islands and every section on the frame independently. Wall tie points on sprite props may lie on section seam walls; check threading and clip/cable clearance before assembly. Frame rails are planning references only.'))
-    files.push(text('OPEN_IN_BLENDER.py',`# HoloMatrix PX: reviewed Blender 5.x import workflow. No scene reset.
+    files.push(text('OPEN_IN_BLENDER.py',`# HoloProp Matrix: reviewed Blender 5.x import workflow. No scene reset.
 # Extract the complete ZIP first. Run this file in Blender's Scripting workspace.
 # Editable mesh parts are arranged in PRINT orientation, not assembled poses.
-# Regenerate dimensions from project.holomatrix-px.json in HoloMatrix PX.
+# Regenerate dimensions from project.holoprop-matrix.json in HoloProp Matrix.
 import bpy, json
 from pathlib import Path
 folder = Path(__file__).resolve().parent
@@ -81,8 +81,8 @@ if target.exists():
     raise RuntimeError('pixel_prop_parts.blend exists. Rename it before running; no file overwritten.')
 if not hasattr(bpy.ops.wm, 'stl_import'):
     raise RuntimeError('Blender 4.1+ STL import is required.')
-project = json.loads((folder / 'project.holomatrix-px.json').read_text(encoding='utf-8'))
-collection = bpy.data.collections.new('HoloMatrix PX imported print parts')
+project = json.loads((folder / 'project.holoprop-matrix.json').read_text(encoding='utf-8'))
+collection = bpy.data.collections.new('HoloProp Matrix imported print parts')
 bpy.context.scene.collection.children.link(collection)
 collection['blueprint_json'] = json.dumps(project)
 collection['units'] = '1 Blender coordinate = 1 mm; do not rescale mesh coordinates'

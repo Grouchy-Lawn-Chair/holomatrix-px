@@ -1,4 +1,4 @@
-name: Publish HoloMatrix PX
+name: Publish HoloProp Matrix
 on:
   push:
     branches: [master]

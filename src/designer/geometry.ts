@@ -219,7 +219,7 @@ export function parseProject(raw: string): Settings {
     if(value[field]!==undefined&&(!Number.isFinite(value[field])||value[field]<min||value[field]>max))throw new Error('Invalid strip dimensions.')
   }
   if(value.lighting==='strip'&&value.diffuser!=='house')throw new Error('Strip mode uses the 33 mm House diffuser.')
-  if (value?.version !== 1 || !['arch','line','custom','sprite'].includes(value.shape) || !['house','mario'].includes(value.diffuser)) throw new Error('Choose a HoloMatrix PX project file.')
+  if (value?.version !== 1 || !['arch','line','custom','sprite'].includes(value.shape) || !['house','mario'].includes(value.diffuser)) throw new Error('Choose a HoloProp Matrix project file.')
   if(value.shape==='sprite'){validateSprite(value.sprite);if(value.lighting==='strip')throw new Error('Sprite props currently require individually addressed bullet pixels.')}
   if(value.sprite!==undefined)validateSprite(value.sprite)
   if(value.frame!==undefined){const f=value.frame;if(!f||typeof f.enabled!=='boolean'||!['vertical','horizontal','cross'].includes(f.axis)||!Number.isInteger(f.rails)||f.rails<1||f.rails>8||!Number.isFinite(f.offset)||Math.abs(f.offset)>48||!Number.isFinite(f.diameter)||f.diameter<10||f.diameter>60||!Number.isFinite(f.standOff)||f.standOff<30||f.standOff>200)throw new Error('Invalid support-frame settings.')}

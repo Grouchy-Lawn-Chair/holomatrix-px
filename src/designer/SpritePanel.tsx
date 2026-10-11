@@ -4,6 +4,7 @@ import {pumpkinSprite,resizeSprite,spriteFromRgba,validateSprite,type PumpkinFac
 import {jointSettings} from './sectionLayout'
 import type {generate} from './geometry'
 import {publicAsset} from '../publicAsset'
+import {privateLibrary,savePrivateLibrary,importPropPack,type PropAsset} from './propLibrary'
 
 export default function SpritePanel({settings,layout,onChange,onMessage,tool,setTool,color,setColor,panel='prop'}:{panel?:'prop'|'joints';settings:Settings;layout:ReturnType<typeof generate>;onChange:(s:Partial<Settings>)=>void;onMessage:(m:string)=>void;tool:'inspect'|'paint'|'erase';setTool:(t:'inspect'|'paint'|'erase')=>void;color:string;setColor:(c:string)=>void}){
   const sprite=settings.sprite!,[face,setFace]=useState<PumpkinFace>('happy'),[cutouts,setCutouts]=useState(false)
@@ -11,14 +12,24 @@ export default function SpritePanel({settings,layout,onChange,onMessage,tool,set
   const image=useRef<ImageBitmap|null>(null),file=useRef<HTMLInputElement>(null)
   const [imageSize,setImageSize]=useState({width:0,height:0}),[crop,setCrop]=useState({x:0,y:0,width:1,height:1})
   const [removeBackground,setRemoveBackground]=useState(false),[background,setBackground]=useState('#ffffff'),[preview,setPreview]=useState('')
-  type Asset={id:string;label:string;width:number;height:number;pixels:number;url:string;dataUrl:string}
-  const [assets,setAssets]=useState<Asset[]>([]),[libraryChoice,setLibraryChoice]=useState('current'),[loadingAsset,setLoadingAsset]=useState(false)
+  const packFile=useRef<HTMLInputElement>(null)
+  const [assets,setAssets]=useState<PropAsset[]>(privateLibrary),[libraryChoice,setLibraryChoice]=useState('current'),[loadingAsset,setLoadingAsset]=useState(false)
   const assetRequest=useRef(0)
-  useEffect(()=>{const controller=new AbortController();fetch(publicAsset('/prop-library/jack-o-lantern/manifest.json'),{signal:controller.signal}).then(r=>{if(!r.ok)throw new Error('Could not load supplied prop library.');return r.json()}).then(m=>setAssets(m.assets)).catch(e=>{if(e.name!=='AbortError')onMessage(e.message)});return()=>{controller.abort();assetRequest.current++}},[])
+  useEffect(()=>{const controller=new AbortController();fetch(publicAsset('/prop-library/jack-o-lantern/manifest.json'),{signal:controller.signal}).then(r=>{if(!r.ok)throw new Error('Could not load supplied prop library.');return r.json()}).then(m=>setAssets([...privateLibrary(),...m.assets])).catch(e=>{if(e.name!=='AbortError')onMessage(e.message)});return()=>{controller.abort();assetRequest.current++}},[])
+  const loadPack=async(f?:File)=>{
+    if(!f)return
+    assetRequest.current++;setLoadingAsset(true)
+    try{
+      const pack=await importPropPack(f),merged=new Map(privateLibrary().map(a=>[a.id,a]))
+      pack.assets.forEach(a=>merged.set(a.id,a));const saved=[...merged.values()]
+      savePrivateLibrary(saved);setAssets([...saved,...assets.filter(a=>!a.sprite)])
+      onMessage(`${pack.assets.length} prop patterns imported privately${pack.skipped?`; ${pack.skipped} larger/empty images skipped`:''}. Saved only in this browser; no images uploaded.`)
+    }catch(e){onMessage(e instanceof Error?e.message:'Could not import prop pack.')}finally{setLoadingAsset(false)}
+  }
   const chooseAsset=async(id:string)=>{
     const asset=assets.find(a=>a.id===id);if(!asset)return
     const request=++assetRequest.current;setLoadingAsset(true);setLibraryChoice(id)
-    try{const response=await fetch(publicAsset(asset.dataUrl));if(!response.ok)throw new Error('Could not load prop artwork.');const next=await response.json();validateSprite(next);if(request!==assetRequest.current)return
+    try{const next=asset.sprite??await (async()=>{if(!asset.dataUrl)throw new Error('Missing prop artwork.');const response=await fetch(publicAsset(asset.dataUrl));if(!response.ok)throw new Error('Could not load prop artwork.');return response.json()})();validateSprite(next);if(request!==assetRequest.current)return
       onChange({sprite:next});setTool('inspect');onMessage(`${asset.label}: original ${asset.width} × ${asset.height} grid, ${asset.pixels} lights. Transparent pixels omitted; black retained.`)
     }catch(e){if(request===assetRequest.current)onMessage(e instanceof Error?e.message:'Could not load prop.')}finally{if(request===assetRequest.current)setLoadingAsset(false)}
   }
@@ -56,7 +67,9 @@ export default function SpritePanel({settings,layout,onChange,onMessage,tool,set
       onChange({sprite:e.target.value==='blank'?{width,height,cells:[],source:'Hand-drawn pixel prop'}:pumpkinSprite(width,height,face,cutouts)})
     }}><option value="current">Current artwork</option><option value="pumpkin">Generated pumpkin / jack-o’-lantern</option><optgroup label="Your supplied Halloween bitmaps">{assets.map(a=><option key={a.id} value={a.id}>{a.label} · {a.width} × {a.height}</option>)}</optgroup><option value="import">Import image / game sprite…</option><option value="blank">Blank pixel canvas</option></select></label>
     {loadingAsset&&<p role="status">Loading original artwork…</p>}
-    {assets.length>0&&<details className="ps-library-gallery"><summary>Browse {assets.length} prop thumbnails</summary><div>{assets.map(a=><button key={a.id} title={`${a.label} · ${a.pixels} lights`} aria-label={`Use ${a.label}`} onClick={()=>void chooseAsset(a.id)}><img src={a.url} alt=""/><span>{a.label.replace('Halloween Prop ','H ').replace('Jack o lantern ','J ')}</span></button>)}</div></details>}
+    {assets.length>0&&<details className="ps-library-gallery"><summary>Browse {assets.length} prop thumbnails</summary><div>{assets.map(a=><button key={a.id} title={`${a.label} · ${a.pixels} lights`} aria-label={`Use ${a.label}`} onClick={()=>void chooseAsset(a.id)}><img src={a.sprite?a.url:publicAsset(a.url)} alt=""/><span>{a.label.replace('Halloween Prop ','H ').replace('Jack o lantern ','J ')}</span></button>)}</div></details>}
+    {!assets.length&&<p className="ps-help">Your supplied prop pack is private, not bundled on this public site. Import its ZIP once to restore all patterns in this browser.</p>}
+    <button className="ps-import-button" disabled={loadingAsset} onClick={()=>packFile.current?.click()}>Import prop pack (ZIP)</button><input ref={packFile} hidden type="file" accept=".zip,application/zip" onChange={e=>{void loadPack(e.target.files?.[0]);e.target.value=''}}/>
     <details className="ps-advanced"><summary>Generate or resize artwork</summary><label className="ps-field"><span>Pumpkin face</span><select aria-label="Pumpkin face" value={face} onChange={e=>setFace(e.target.value as PumpkinFace)}><option value="plain">No carved face</option><option value="happy">Happy</option><option value="scary">Scary</option><option value="goofy">Goofy</option></select></label>
     <label className="ps-long-teeth"><input type="checkbox" checked={cutouts} onChange={e=>setCutouts(e.target.checked)}/> Physical face cutouts</label>
     <p className="ps-help">Default: the face is dark-colored LEDs, not missing plastic. Cutouts remove lights and material and may need separate strings.</p>

@@ -175,7 +175,7 @@ export async function carrierMesh(pixels: Pixel[], settings: Settings, plates:Ba
 
 export function binaryStl(triangles: Triangle[]): Uint8Array {
   const buffer=new ArrayBuffer(84+50*triangles.length), view=new DataView(buffer), bytes=new Uint8Array(buffer)
-  bytes.set(new TextEncoder().encode('HoloMatrix PX | Prototype carrier | millimetres'))
+  bytes.set(new TextEncoder().encode('HoloProp Matrix | Prototype carrier | millimetres'))
   view.setUint32(80,triangles.length,true)
   triangles.forEach(([a,b,c],index)=>{
     const u=b.map((v,i)=>v-a[i]),v=c.map((value,i)=>value-a[i])

@@ -35,7 +35,7 @@ The overlap faces are accessible for your adhesive method if you decide to bond 
 Do not integrate across a prop until the physical PETG coupon fits. Strip mode is available; stage 3 tested joints and matching numbers still pending.
 `)},
     {name:'pvc_house_clip_ORIGINAL_UNCHANGED.stl',bytes:clip},
-    {name:'FIT_TEST_README.txt',bytes:new TextEncoder().encode(`HoloMatrix PX - reinforced PETG puzzle-joint fit test
+    {name:'FIT_TEST_README.txt',bytes:new TextEncoder().encode(`HoloProp Matrix - reinforced PETG puzzle-joint fit test
 TEST PIECES ONLY. These features are not added to prop sections yet.
 Print puzzle_male_coupon.stl and puzzle_female_coupon.stl once each at 100% scale, millimetres, in PETG.
 Both lie flat on Z=0 and are 6 mm thick. No roofs, spring arms or tiny catches.
@@ -60,7 +60,7 @@ Do not print a full prop assuming these joints or mounting adapters exist yet.
 }
 export async function exportHardwareTests() {
   const bytes=zipFiles(await buildHardwareFiles()),url=URL.createObjectURL(new Blob([bytes.slice().buffer],{type:'application/zip'})),a=document.createElement('a')
-  a.href=url;a.download='holomatrix-px-joint-pin-fit-tests-R2.zip';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)
+  a.href=url;a.download='holoprop-matrix-joint-pin-fit-tests-R2.zip';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)
 }
 
 export async function buildStlFiles(s:Settings) {
@@ -128,7 +128,7 @@ PVC mounts are separate green plates, not seam bridges. Read PVC_MOUNTS.txt. You
   if(s.capFit==='extended')files.push({name:'LONG_TEETH.txt',bytes:new TextEncoder().encode(`DERIVED prototype cap. Original source preserved. 3.5 mm teeth pass through the flat 2.1 mm floor; approximately 1.4 mm projects into the cable cavity. No raised pixel or foot pads. Through-floor sockets have ${toothClearanceTotal(s)} mm TOTAL XY clearance (${(toothClearanceTotal(s)/2).toFixed(2)} mm per side). Slots enlarged; teeth unchanged. Clearance is a test allowance, not confirmed physical fit. Cable walls above socket roofs remain; inspect short socket bridges in slicer. Bullet grip web stays 2.1 mm. Print cap closed face down, teeth up; backer floor down. Test fit, wire clearance and pull-off retention in PETG. Individual long-foot caps are not section-spanning double caps and do not replace rear bridges.`)})
   files.push({name:capName,bytes:cap})
   if(s.lighting!=='strip')files.push({name:'BULLET_CAPS.txt',bytes:new TextEncoder().encode('DERIVED BULLET DIFFUSERS: source strip-routing notches and small side apertures are filled within the measured wall/foot silhouettes. Outside cap dimensions and foot envelopes are preserved. Applies to single and joined caps, original-length and long teeth. Original reference STL is not overwritten. LED-strip mode retains its passages instead. Print closed face down, openings/feet up; verify pixel, optical and PETG fit on one sample.')})
-  files.push({name:'project.holomatrix-px.json',bytes:new TextEncoder().encode(JSON.stringify(s,null,2))})
+  files.push({name:'project.holoprop-matrix.json',bytes:new TextEncoder().encode(JSON.stringify(s,null,2))})
   if(s.lighting==='strip'){
     const strip=stripSpec(s)
     files.push({name:'STRIP_README.txt',bytes:new TextEncoder().encode(`PROTOTYPE LED STRIP MOUNT, 30 LEDs/m. Profile ${s.stripType??'ip30'}.
@@ -142,7 +142,7 @@ Strips, sleeves, adhesive, pad joints and end fittings vary. Check sleeve fit, c
 Rear backing plates and zip-tie slots are included when the layout has multiple sections. Read BACKING_PLATES.txt and PVC_MOUNTS.txt for separate clip mounts.
 `)})
   }
-  files.push({name:'START_HERE.txt',bytes:new TextEncoder().encode(`HoloMatrix PX prototype backers + diffuser cap
+  files.push({name:'START_HERE.txt',bytes:new TextEncoder().encode(`HoloProp Matrix prototype backers + diffuser cap
 ${layout.pixels.length} lights / ${layout.sections.length} carrier sections.
 Units: millimetres. Load at 100% scale. Print each section STL once, flat floor on the bed, open cable cavity up.
 Print ${singleCaps} copies of ${capName} for single-cap positions, plus ONE of each joined_diffuser STL. These together cover ${layout.pixels.length} lights. Read JOINED_DIFFUSERS.txt; do not double-install caps on connector cells.
@@ -161,7 +161,7 @@ Section placement reserves 6 mm per side for future connectors, plus your bed ed
 export async function exportStls(s:Settings) {
   const files=await buildStlFiles(s)
   const bytes=zipFiles(files),url=URL.createObjectURL(new Blob([bytes.slice().buffer],{type:'application/zip'})),a=document.createElement('a')
-  a.href=url;a.download='holomatrix-px-prototype-STLs.zip';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)
+  a.href=url;a.download='holoprop-matrix-prototype-STLs.zip';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)
 }
 export async function buildBackingPlateFitFiles(s:Settings){
   const cells=[{x:0,y:0,id:1,row:0,section:0},{x:1,y:0,id:2,row:0,section:1}],plates=backingPlatePlan(cells)
@@ -179,7 +179,7 @@ PVC clip attachment is still pending. Do not assume a mount-ready prop. Caps are
 }
 export async function exportBackingPlateFitTest(s:Settings){
   const bytes=zipFiles(await buildBackingPlateFitFiles(s)),url=URL.createObjectURL(new Blob([bytes.slice().buffer],{type:'application/zip'})),a=document.createElement('a')
-  a.href=url;a.download=`holomatrix-px-${s.diffuser}-rear-plate-fit-test.zip`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)
+  a.href=url;a.download=`holoprop-matrix-${s.diffuser}-rear-plate-fit-test.zip`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)
 }
 export async function buildStripFitFiles(s:Settings) {
   if(s.lighting!=='strip')throw new Error('Choose LED strip lighting first.')
@@ -194,7 +194,7 @@ Check strip/sleeve clearance, cap feet seating, bridge sag and light alignment. 
 }
 export async function exportStripFitTest(s:Settings) {
   const bytes=zipFiles(await buildStripFitFiles(s)),url=URL.createObjectURL(new Blob([bytes.slice().buffer],{type:'application/zip'})),a=document.createElement('a')
-  a.href=url;a.download=`holomatrix-px-strip-${s.stripType??'ip30'}-fit-test.zip`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)
+  a.href=url;a.download=`holoprop-matrix-strip-${s.stripType??'ip30'}-fit-test.zip`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)
 }
 export function download(name: string, content: string, type = 'text/plain') {
   const url = URL.createObjectURL(new Blob([content], { type }))
@@ -209,7 +209,7 @@ export function exportSvg(s: Settings) {
 export async function exportBlender(s: Settings) {
   const l = generate(s)
   const sections = await Promise.all(l.sections.map(section => carrierMesh(section,s)))
-  download('build_pixel_prop.py', `# Generated by HoloMatrix PX. Prototype carriers only.
+  download('build_pixel_prop.py', `# Generated by HoloProp Matrix. Prototype carriers only.
 # Caps are separate. PVC clips and section connectors are not included yet.
 # Run in Blender 5.2 Scripting workspace. Output goes beside the saved script.
 import bpy, bmesh
