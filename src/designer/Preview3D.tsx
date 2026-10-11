@@ -198,7 +198,9 @@ export default function Preview3D({settings,layout,selected,onSelect,toolbarTarg
       const fitBox=new THREE.Box3()
       model.children.filter(child=>child.visible).forEach(child=>fitBox.expandByObject(child))
       if(fitBox.isEmpty())fitBox.setFromCenterAndSize(new THREE.Vector3(fitX,fitY,12),new THREE.Vector3(display.width*size,display.height*size,explode+50))
-      holodeck.ground(fitBox.min.y)
+      const propBox=new THREE.Box3()
+      model.children.filter(child=>child.visible&&!child.userData.planningRail).forEach(child=>propBox.expandByObject(child))
+      holodeck.ground(propBox.isEmpty()?fitBox.min.y:propBox.min.y)
       frame(fitBox,direction)
     }
     const focus=()=>{
@@ -259,7 +261,7 @@ export default function Preview3D({settings,layout,selected,onSelect,toolbarTarg
             const a=new THREE.Vector3((rail.a.x-centerX)*size,-(rail.a.y-centerY)*size,rail.rearCenter),b=new THREE.Vector3((rail.b.x-centerX)*size,-(rail.b.y-centerY)*size,rail.rearCenter)
             const g=new THREE.CylinderGeometry(f.diameter/2,f.diameter/2,a.distanceTo(b),16),m=new THREE.MeshStandardMaterial({color:0x647b89,roughness:.42,metalness:.5}),pipe=new THREE.Mesh(g,m)
             pipe.position.copy(a.clone().add(b).multiplyScalar(.5));pipe.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),b.clone().sub(a).normalize())
-            pipe.userData={label:`Conduit planning rail ${rail.id} · not printable`};model.add(pipe);geometries.push(g);materials.push(m)
+            pipe.userData={label:`Conduit planning rail ${rail.id} · not printable`,planningRail:true};model.add(pipe);geometries.push(g);materials.push(m)
           }
         }
         const zones=conduitClipPlan(layout.pixels,settings).filter(z=>z.sections.some(n=>offsets.has(n)))
