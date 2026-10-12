@@ -29,6 +29,7 @@ import marioUrl from '../../diffuser_references/mario_25_08mm.stl?url'
 import houseUrl from '../../diffuser_references/house_33mm.stl?url'
 import './previewNavigation.css'
 import {createHolodeck} from './holodeck'
+import {configureGlowPasses} from './glowRendering'
 
 const colors=['#9cbd9b','#e5b27c','#8cb6b8','#b7a6cc','#d9948d','#c4bd7f']
 type Props={settings:Settings;layout:ReturnType<typeof generate>;selected:number;onSelect:(n:number)=>void;toolbarTarget:HTMLDivElement|null;showFrameGuides?:boolean;materializeRequest?:number}
@@ -95,6 +96,7 @@ export default function Preview3D({settings,layout,selected,onSelect,toolbarTarg
     const geometries:THREE.BufferGeometry[]=[],materials:THREE.Material[]=[]
     const composer=new EffectComposer(renderer),scenePass=new RenderPass(scene,camera)
     const bloom=new UnrealBloomPass(new THREE.Vector2(1,1),.25,.1,.9),output=new OutputPass()
+    configureGlowPasses(bloom,output)
     composer.addPass(scenePass);composer.addPass(bloom);composer.addPass(output)
     const render=()=>{holodeck.follow(camera);outline?.update();if(lightsEnabled)composer.render();else renderer.render(scene,camera)}
     const glowing:{material:THREE.MeshStandardMaterial;base:THREE.Color;index:number;art?:THREE.Color}[]=[]
