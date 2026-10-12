@@ -1,4 +1,4 @@
-name: Publish HoloProp Matrix
+name: Publish holomatrix-px
 on:
   push:
     branches: [master]

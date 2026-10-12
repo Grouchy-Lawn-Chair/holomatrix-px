@@ -56,7 +56,7 @@ async function buildAssemblyFiles(s:Settings,pixels:Pixel[],sections:Pixel[][],s
   const capName=s.capFit==='extended'?`diffuser_cap_${s.diffuser}_LONG_TEETH_${s.lighting==='strip'?s.stripType??'ip30':'bullet'}_DERIVED.stl`:s.lighting==='strip'?`diffuser_cap_STRIP_${s.stripType??'ip30'}_DERIVED.stl`:`diffuser_cap_${s.diffuser}_BULLET_CLOSED_DERIVED.stl`
   files.push({name:capName,bytes:binaryStl(onBed(ts))})
   const covered=new Set(seams.flatMap(p=>p.cells??[p.a,p.b]).map(c=>c.id)),singles=pixels.length-covered.size
-  files.push(text('START_HERE.txt',`HoloProp Matrix - wall-slotted mounting system, PROTOTYPE.
+  files.push(text('START_HERE.txt',`holomatrix-px - wall-slotted mounting system, PROTOTYPE.
 ${pixels.length} lights / ${sections.length} carrier sections.
 Print each tray once: floor down, protective cable walls up. Flat bullet-retaining floor 2.1 mm; perimeter wall thickness 2 mm, total depth 25.396 mm. No raised retention pads. Bullet-mode diffuser strip passages are closed; strip-mode passages remain open.
 Print ${singles} single caps from ${capName}, plus each merged seam diffuser once. These together cover ${pixels.length} lights. Caps print closed face down, feet up. Never install a single cap underneath a merged cap.
@@ -81,7 +81,7 @@ ${seams.map(p=>`Seam ${p.id}: sections ${p.a.section+1}/${p.b.section+1}, ${(p.c
     const sp=stripSpec(s)
     files.push(text('STRIP_README.txt',`30 LEDs/m prototype, ${s.stripType??'ip30'}. ${sp.width} mm profile width, channel width ${sp.channelWidth} mm, height ${sp.thickness} mm. NO bullet-pixel holes. Strip's purchased IP rating is not this printed enclosure. 33.333 mm nominal LED pitch versus 33 mm touching diffuser centers; check accumulated alignment. Cut only at permitted pads; staircase turns require separate routing. Mounts and wiring must not obstruct the strip. Test a short sample.`))
   }
-  files.push(text('project.holoprop-matrix.json',JSON.stringify(s,null,2)))
+  files.push(text('project.holomatrix-px.json',JSON.stringify(s,null,2)))
   return files
 }
 

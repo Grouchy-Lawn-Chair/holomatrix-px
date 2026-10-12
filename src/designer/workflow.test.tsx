@@ -21,7 +21,7 @@ it('uses adjacent workspace views rather than a separate Mount wizard step',()=>
  expect(html).not.toContain('ps-step-footer')
  expect(html.slice(html.indexOf('<header'),html.indexOf('</header>'))).toContain('Workspace views')
  expect(html).toContain('File ▾')
- expect(html).toContain('HoloProp Matrix')
+ expect(html).toContain('holomatrix-px')
  expect(html).toContain('Lawnchair Labs')
  expect(html).toContain('From pixels to props, automagically.')
  expect(html).toContain('Pattern Matrix')
