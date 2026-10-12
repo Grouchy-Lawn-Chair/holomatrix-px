@@ -25,3 +25,18 @@ it('keeps the deck touching the lowest model point at every zoom distance',()=>{
  }
  room.dispose()
 })
+it('renders every room surface behind the prop without depth occlusion',()=>{
+ const room=createHolodeck(500)
+ for(const panel of room.group.children){
+  const [wall,grid]=panel.children as [THREE.Mesh,THREE.LineSegments]
+  for(const surface of [wall,grid]){
+   const material=surface.material as THREE.Material
+   expect(material.depthWrite).toBe(false)
+   expect(material.depthTest).toBe(false)
+   expect(material.transparent).toBe(false)
+   expect(surface.renderOrder).toBeLessThan(0)
+  }
+  expect(wall.renderOrder).toBeLessThan(grid.renderOrder)
+ }
+ room.dispose()
+})

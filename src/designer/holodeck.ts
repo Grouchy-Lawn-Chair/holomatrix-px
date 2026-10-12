@@ -10,9 +10,10 @@ export function createHolodeck(span:number){
   points.push(-extent,p,0,extent,p,0,p,-extent,0,p,extent,0)
  }
  const grid=new THREE.BufferGeometry();grid.setAttribute('position',new THREE.Float32BufferAttribute(points,3))
- const lines=new THREE.LineBasicMaterial({color:0xe9a849,transparent:true,opacity:.19,depthWrite:false})
+ // Pre-blended amber keeps grid lines in the opaque background queue too.
+ const lines=new THREE.LineBasicMaterial({color:0x332b1f,depthWrite:false,depthTest:false})
  const wallGeometry=new THREE.PlaneGeometry(extent*2,extent*2)
- const wallMaterial=new THREE.MeshBasicMaterial({color:0x080d15,side:THREE.FrontSide})
+ const wallMaterial=new THREE.MeshBasicMaterial({color:0x080d15,side:THREE.FrontSide,depthWrite:false,depthTest:false})
  const faces=[
   {name:'Rear wall',p:[0,extent,-extent],r:[0,0,0]},
   {name:'Front wall',p:[0,extent,extent],r:[0,Math.PI,0]},
@@ -24,6 +25,9 @@ export function createHolodeck(span:number){
  for(const face of faces){
   const panel=new THREE.Group();panel.name=face.name;panel.position.set(...face.p as [number,number,number]);panel.rotation.set(...face.r as [number,number,number])
   const wall=new THREE.Mesh(wallGeometry,wallMaterial),wire=new THREE.LineSegments(grid,lines)
+  // Render the entire room as a background pass, before printable geometry.
+  // Opaque walls must never write depth in front of the prop during an orbit.
+  wall.renderOrder=-1000;wire.renderOrder=-999
   wire.position.z=.1;wire.raycast=()=>{};wall.raycast=()=>{};panel.add(wall,wire);group.add(panel)
  }
  return {group,ground:(lowestPoint:number)=>{group.position.y=lowestPoint},follow:(camera:THREE.Camera)=>{
