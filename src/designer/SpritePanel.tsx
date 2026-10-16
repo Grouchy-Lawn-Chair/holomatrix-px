@@ -30,7 +30,7 @@ export default function SpritePanel({settings,layout,onChange,onMessage,tool,set
     const asset=assets.find(a=>a.id===id);if(!asset)return
     const request=++assetRequest.current;setLoadingAsset(true);setLibraryChoice(id)
     try{const next=asset.sprite??await (async()=>{if(!asset.dataUrl)throw new Error('Missing prop artwork.');const response=await fetch(publicAsset(asset.dataUrl));if(!response.ok)throw new Error('Could not load prop artwork.');return response.json()})();validateSprite(next);if(request!==assetRequest.current)return
-      onChange({sprite:next});setTool('inspect');onMessage(`${asset.label}: original ${asset.width} × ${asset.height} grid, ${asset.pixels} lights. Transparent pixels omitted; black retained.`)
+      onChange({sprite:next});setTool('inspect');onMessage(`${asset.label} · ${asset.width} × ${asset.height} · ${asset.pixels} lights`)
     }catch(e){if(request===assetRequest.current)onMessage(e instanceof Error?e.message:'Could not load prop.')}finally{if(request===assetRequest.current)setLoadingAsset(false)}
   }
   useEffect(()=>{setWidth(sprite.width);setHeight(sprite.height)},[sprite.width,sprite.height])
@@ -67,8 +67,8 @@ export default function SpritePanel({settings,layout,onChange,onMessage,tool,set
       onChange({sprite:e.target.value==='blank'?{width,height,cells:[],source:'Hand-drawn pixel prop'}:pumpkinSprite(width,height,face,cutouts)})
     }}><option value="current">Current artwork</option><option value="pumpkin">Generated pumpkin / jack-o’-lantern</option><optgroup label="Your supplied Halloween bitmaps">{assets.map(a=><option key={a.id} value={a.id}>{a.label} · {a.width} × {a.height}</option>)}</optgroup><option value="import">Import image / game sprite…</option><option value="blank">Blank pixel canvas</option></select></label>
     {loadingAsset&&<p role="status">Loading original artwork…</p>}
-    {assets.length>0&&<details className="ps-library-gallery"><summary>Browse {assets.length} prop thumbnails</summary><div>{assets.map(a=><button key={a.id} title={`${a.label} · ${a.pixels} lights`} aria-label={`Use ${a.label}`} onClick={()=>void chooseAsset(a.id)}><img src={a.sprite?a.url:publicAsset(a.url)} alt=""/><span>{a.label.replace('Halloween Prop ','H ').replace('Jack o lantern ','J ')}</span></button>)}</div></details>}
-    {!assets.length&&<p className="ps-help">Your supplied prop pack is private, not bundled on this public site. Import its ZIP once to restore all patterns in this browser.</p>}
+    {assets.length>0&&<details className="ps-library-gallery"><summary>Browse {assets.length} patterns</summary><div>{assets.map(a=><button key={a.id} title={`${a.label} · ${a.pixels} lights`} aria-label={`Use ${a.label}`} onClick={()=>void chooseAsset(a.id)}><img src={a.sprite?a.url:publicAsset(a.url)} alt=""/><span>{a.label.replace('Halloween Prop ','H ').replace('Jack o lantern ','J ')}</span></button>)}</div></details>}
+    {!assets.length&&<p className="ps-help">Import your prop ZIP to restore private patterns in this browser.</p>}
     <button className="ps-import-button" disabled={loadingAsset} onClick={()=>packFile.current?.click()}>Import prop pack (ZIP)</button><input ref={packFile} hidden type="file" accept=".zip,application/zip" onChange={e=>{void loadPack(e.target.files?.[0]);e.target.value=''}}/>
     <details className="ps-advanced"><summary>Generate or resize artwork</summary><label className="ps-field"><span>Pumpkin face</span><select aria-label="Pumpkin face" value={face} onChange={e=>setFace(e.target.value as PumpkinFace)}><option value="plain">No carved face</option><option value="happy">Happy</option><option value="scary">Scary</option><option value="goofy">Goofy</option></select></label>
     <label className="ps-long-teeth"><input type="checkbox" checked={cutouts} onChange={e=>setCutouts(e.target.checked)}/> Physical face cutouts</label>

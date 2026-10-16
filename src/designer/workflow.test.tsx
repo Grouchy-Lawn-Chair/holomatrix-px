@@ -29,6 +29,8 @@ it('uses adjacent workspace views rather than a separate Mount wizard step',()=>
  expect(html).toContain('Replicator Output')
  expect(html).toContain('Materialize')
  expect(html).not.toContain('Prop library')
+ expect(html).toContain('aria-label="Show guidance" aria-expanded="false" aria-controls="ps-setup-fields"')
+ expect(html).not.toContain('ps-guidance-open')
 })
 it('shows length, not rise or artwork options, for straight runs',()=>{
  vi.stubGlobal('localStorage',{getItem:()=>JSON.stringify({...defaults,shape:'line'})})
