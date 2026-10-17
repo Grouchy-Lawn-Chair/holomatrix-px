@@ -16,6 +16,7 @@ it.skipIf(!existsSync(root+'jack-o-lantern-535.json'))('retains every original b
   expect(l.pixels.length,name).toBe(s.sprite!.cells.length);expect(l.printable,name).toBe(true)
   expect(new Set(l.sections.flat().map(p=>`${p.x},${p.y}`)).size,name).toBe(l.pixels.length)
   expect(l.wiringComplete,name).toBe(true);expect(l.wireStrings.flat().length,name).toBe(l.pixels.length)
+  expect(l.wireStrings,name).toHaveLength(1);expect(l.wirePaths,name).toHaveLength(l.nodes.length-1)
  }
 },30000)
 it('keeps two-cell poles intact and gives their end joins broad steps',()=>{

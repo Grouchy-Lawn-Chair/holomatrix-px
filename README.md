@@ -47,9 +47,11 @@ changes LED colors; erasing also removes physical cells. Alpha is empty,
 while black remains a real node unless explicitly removed as background.
 Current grids are limited to 48 × 48 and use bullet pixels.
 
-One grid drives artwork, tray sections, numbering and wiring. Routes avoid
-open gaps and crossings; shapes without a continuous route get explicit
-independent data strings. Export includes `.xmodel`, native-grid PNG/BMP,
+One grid drives artwork, tray sections, numbering and wiring. All LEDs form
+one series data chain with one input and one output. Local weaves are joined
+by labeled rear jumpers at choke points; separate islands get explicit frame
+bridges rather than extra controller feeds. JUMPERS.csv includes route lengths
+and added-wire estimates from the editable stock lead plus 20 mm allowance. Export includes `.xmodel`, native-grid PNG/BMP,
 node/string/wire maps, injection estimates, project JSON, STL parts and a
 non-destructive Blender import script. The xLights format was checked against
 upstream source; importing into the user's installed xLights is still needed.
@@ -217,7 +219,7 @@ Conduit mounting now renders and exports **actual two-part hardware derived from
 
 Permanent Design / 3D / Wiring / Print navigation and view controls live in the main header, alongside one File menu. The side rail contains configuration only; no bottom Next button or extra workspace toolbar. Purple, coral and cyan accents keep the canvas neutral.
 
-Sprite wiring defaults to horizontal serpentine rows. Row changes follow the boundary behind occupied plastic, preserving separate strings when a gap cannot be crossed. Compact routing remains optional. Changing routing renumbers nodes; re-export the matching xLights model. An optional **Solid dark outer border** setting keeps plastic and opaque black caps but removes LED mounting holes and electrical nodes from outside-connected near-black cells (all RGB channels ≤32). Enclosed dark face cells remain lights for animation. Artwork is preserved. NODE_MAP, SOLID_BORDER, power planning and xLights exports follow the chosen occupancy; caps for solid borders are listed separately.
+Sprite wiring defaults to local horizontal serpentine rows in one continuous data chain. Rear returns follow cell edges behind the plastic; open-gap bridges are explicitly marked and need frame support. Compact local routing remains optional. Data is serial; power injection remains a separate parallel-power plan. Changing routing renumbers nodes; re-export the matching xLights model. An optional **Solid dark outer border** setting keeps plastic and opaque black caps but removes LED mounting holes and electrical nodes from outside-connected near-black cells (all RGB channels ≤32). Enclosed dark face cells remain lights for animation. Artwork is preserved. NODE_MAP, SOLID_BORDER, power planning and xLights exports follow the chosen occupancy; caps for solid borders are listed separately.
 
 ### Original planner features
 

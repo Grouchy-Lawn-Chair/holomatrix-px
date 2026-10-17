@@ -53,6 +53,9 @@ body.pixel-studio-page{background:#050608;color:#e8e4ef;color-scheme:dark}
 .ps-app.ps-workflow .ps-section-strip{background:#050608;border-color:#302d3a;padding:7px 10px;gap:4px}.ps-app.ps-workflow .ps-section-strip button{background:var(--violet);color:#101018;border-radius:0;font-size:10px}.ps-app.ps-workflow .ps-section-strip button.active{background:var(--amber)}.ps-app.ps-workflow .ps-section-strip small{color:#282031}.ps-app.ps-workflow .ps-planner-link{color:var(--blue)}
 .ps-app.ps-workflow .ps-toast{background:#14101e;color:#eadff7;border:0;border-left:6px solid var(--violet);border-radius:0;font-size:11px;max-width:440px;box-shadow:0 8px 24px #0008}.ps-app.ps-workflow .ps-toast button{background:none;color:var(--violet);border-radius:0}.ps-app.ps-workflow :is(input,select,button,summary):focus-visible{outline:2px solid #fff;outline-offset:3px}.ps-app.ps-workflow .ps-three-error{background:#261722;color:#ffd5b5;border-color:var(--amber)}.ps-app.ps-workflow .ps-mobile-close{background:var(--amber);color:#101018}
 .ps-app.ps-workflow .ps-inspector-heading{text-transform:uppercase}
+.ps-app.ps-workflow .ps-jumper-list button{display:block;width:100%;text-align:left;background:#21192e;color:var(--violet);border-radius:0;margin-top:5px;padding:8px;font-size:10px;text-transform:none}
+.ps-app.ps-workflow .ps-jumper-list button.active{background:var(--violet);color:#101018}
+.ps-app.ps-workflow .ps-jumper-list button span{display:block;font-size:9px;line-height:1.5;font-weight:400;margin-top:3px}
 .ps-app.ps-workflow .ps-advanced>summary,.ps-app.ps-workflow .ps-library-gallery>summary{text-transform:uppercase;letter-spacing:.4px;font-size:10px}
 .ps-app.ps-workflow .ps-bed-svg>circle:first-of-type{fill:#111019;stroke:var(--violet)}
 .ps-app.ps-workflow .ps-bed-svg>circle:nth-of-type(2){stroke:#6d557e}

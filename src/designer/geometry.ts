@@ -1,12 +1,14 @@
 import {weaveWiring} from './wiring'
 import {spriteWiring,validateSprite,exteriorDarkCells,type Sprite} from './sprite'
 import {spriteSections} from './sectionLayout'
+import {wireConnectionPlan} from './seriesWiring'
 export type Point = { x: number; y: number }
 export type Bed = { shape: 'circle' | 'rectangle'; width: number; depth: number; margin: number }
 export type Settings = {
   version: 1; name: string; shape: 'arch' | 'line' | 'custom' | 'sprite'; diffuser: 'mario' | 'house';
   sprite?:Sprite
   spriteWiring?:'rows'|'compact'
+  stockLeadMm?:number
   solidDarkBorder?:boolean
   frame?:{enabled:boolean;axis:'vertical'|'horizontal'|'cross';rails:number;offset:number;diameter:number;standOff:number}
   sectionJoints?:{enabled:boolean;sideGap:number;tipGap:number;cornerChamfer:number;bottomRelief:number;upperRelief:number}
@@ -176,14 +178,16 @@ export function generate(s: Settings) {
   }
   // Partition spatially, independently of electrical order. Reordering wires
   // must not move print seams or scatter a section over the arch.
-  const wiring=s.shape==='sprite'?spriteWiring(pixels.filter(p=>p.led!==false),s.spriteWiring??'rows',pixels):weaveWiring(pixels,center),ids=new Map(wiring.pixels.map(p=>[key(p),p.id]))
+  const local=s.shape==='sprite'?spriteWiring(pixels.filter(p=>p.led!==false),s.spriteWiring??'rows',pixels):weaveWiring(pixels,center)
+  const wiring=local.complete?local:spriteWiring(pixels.filter(p=>p.led!==false),'rows',pixels),ids=new Map(wiring.pixels.map(p=>[key(p),p.id]))
   let solidId=0
   for(const p of pixels)p.id=p.led===false?--solidId:ids.get(key(p))!
   pixels.sort((a,b)=>a.id-b.id)
   const b = bounds(pixels)
   const wireSpans = wiring.paths.map(path=>path.slice(1).reduce((sum,p,i)=>sum+Math.hypot(p.x-path[i].x,p.y-path[i].y)*size,0))
-  const wireStrings=s.shape==='sprite'?'strings' in wiring?wiring.strings as Pixel[][]:[]:[pixels]
-  return { pixels, nodes:pixels.filter(p=>p.led!==false), sections, center, wirePaths:wiring.paths, wireStrings, wiringComplete:wiring.complete, bounds: b, widthMm: b.width * size, heightMm: b.height * size, maxWireSpan: Math.max(0, ...wireSpans), connected: connected.size === pixels.length, printable: pixels.length>0&&sections.every(section => fitsBed(section, size, s.bed)) }
+  const wireStrings='strings' in wiring?wiring.strings as Pixel[][]:pixels.length?[pixels]:[]
+  const wireConnections=wireConnectionPlan(wiring.paths,pixels.filter(p=>p.led!==false),size,s.stockLeadMm??100,'exposedPaths' in wiring?wiring.exposedPaths as number[]:[])
+  return { pixels, nodes:pixels.filter(p=>p.led!==false), sections, center, wirePaths:wiring.paths, wireStrings, wireConnections, wireJumpers:wireConnections.filter(c=>c.jumper!==undefined), wiringComplete:wiring.complete, bounds: b, widthMm: b.width * size, heightMm: b.height * size, maxWireSpan: Math.max(0, ...wireSpans), connected: connected.size === pixels.length, printable: pixels.length>0&&sections.every(section => fitsBed(section, size, s.bed)) }
 }
 
 export function withCount(s: Settings, requested: number): Settings {
@@ -208,6 +212,7 @@ export function withCount(s: Settings, requested: number): Settings {
 export function parseProject(raw: string): Settings {
   const value = JSON.parse(raw)
   if(value.spriteWiring!==undefined&&!['rows','compact'].includes(value.spriteWiring))throw new Error('Invalid sprite wiring style.')
+  if(value.stockLeadMm!==undefined&&(!Number.isFinite(value.stockLeadMm)||value.stockLeadMm<0||value.stockLeadMm>2000))throw new Error('Invalid stock wire length.')
   if(value.solidDarkBorder!==undefined&&typeof value.solidDarkBorder!=='boolean')throw new Error('Invalid dark border setting.')
   if(value.pixelVoltage!==undefined&&value.pixelVoltage!==5&&value.pixelVoltage!==12)throw new Error('Invalid pixel voltage.')
   if(value.injectionEvery!==undefined&&(!Number.isInteger(value.injectionEvery)||value.injectionEvery<1||value.injectionEvery>1000))throw new Error('Invalid injection interval.')

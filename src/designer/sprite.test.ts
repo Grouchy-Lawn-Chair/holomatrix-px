@@ -20,8 +20,8 @@ describe('sprite prop blueprint',()=>{
       const a=path[0],b=path.at(-1)!
       expect(l.nodes.some(p=>p.x===a.x&&p.y===a.y)).toBe(true)
       expect(l.nodes.some(p=>p.x===b.x&&p.y===b.y)).toBe(true)
-      expect(b.y-a.y).toBeGreaterThanOrEqual(0);expect(b.y-a.y).toBeLessThanOrEqual(1)
-      for(let i=1;i<path.length;i++)expect(path[i].x===path[i-1].x||path[i].y===path[i-1].y).toBe(true)
+      const link=l.wireConnections[l.wirePaths.indexOf(path)]
+      expect(link.to).toBe(link.from+1)
     }
     expect(l.wirePaths.length).toBe(l.pixels.length-l.wireStrings.length)
     const joins=diffuserJoinPlan(l.pixels,s)
@@ -33,10 +33,11 @@ describe('sprite prop blueprint',()=>{
     const plain=pumpkinSprite(16,16,'plain'),face=pumpkinSprite(),cut=pumpkinSprite(16,16,'happy',true)
     expect(face.cells.map(cellKey)).toEqual(plain.cells.map(cellKey));expect(face.cells).not.toEqual(plain.cells);expect(cut.cells.length).toBeLessThan(face.cells.length)
   })
-  it('keeps disconnected islands separate, with no made-up wiring links',()=>{
+  it('supports islands independently but joins data with an explicit frame bridge',()=>{
     const s=prop({sprite:{width:5,height:3,source:'test',cells:[{x:0,y:0,color:'#ff0000'},{x:1,y:0,color:'#00ff00'},{x:4,y:2,color:'#0000ff'}]}}),l=generate(s)
-    expect(l.connected).toBe(false);expect(l.sections.length).toBe(2);expect(l.wireStrings.length).toBe(2);expect(l.wirePaths.length).toBe(1);expect(l.printable).toBe(true)
-    expect(xmodel(s)).toContain('CustomStrings="2"');expect(xmodel(s)).toContain('NodeStart2="3"')
+    expect(l.connected).toBe(false);expect(l.sections.length).toBe(2);expect(l.wireStrings.length).toBe(1);expect(l.wirePaths.length).toBe(2);expect(l.printable).toBe(true)
+    expect(l.wireJumpers.filter(j=>j.exposed)).toHaveLength(1)
+    expect(xmodel(s)).toContain('CustomStrings="1"');expect(xmodel(s)).not.toContain('NodeStart2')
   })
   it('round-trips artwork, frame and imported colors, and rejects malformed cells',()=>{
     const s=prop({frame:{...defaultFrame,enabled:true}});expect(parseProject(JSON.stringify(s))).toEqual(s)

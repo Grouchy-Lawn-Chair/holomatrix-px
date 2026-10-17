@@ -1,5 +1,6 @@
 import type {Pixel, Point} from './geometry'
 import {weaveWiring} from './wiring'
+import {stitchSeries} from './seriesWiring'
 
 export type SpriteCell=Point&{color:string}
 export type Sprite={width:number;height:number;cells:SpriteCell[];source:string}
@@ -72,15 +73,15 @@ export function spriteFromRgba(width:number,height:number,rgba:ArrayLike<number>
   const sprite={width,height,cells,source:source.slice(0,200)};validateSprite(sprite);return sprite
 }
 
-// Conservative, deterministic path cover. No open-gap jumps, diagonal
-// crossings or invented return paths. Independent chains require ports.
+// Deterministic local weaves, joined as one series data chain. Necessary
+// rear returns and explicit island bridges are tracked as physical jumpers.
 export function spriteWiring(source:Pixel[],mode:'rows'|'compact'='compact',support:Pixel[]=source){
-  if(mode==='rows')return rowWiring(source,support)
+  if(mode==='rows'){const local=rowWiring(source,support);return stitchSeries(local.strings,local.paths,support)}
   // First try the existing bounded, gap-aware simple-chain solver. Small
   // filled silhouettes often need just one feed, not one per scanline.
   if(mode==='compact'&&source.length>0&&source.length<=512){
     const solved=weaveWiring(source,[])
-    if(solved.complete)return {...solved,strings:[solved.pixels]}
+    if(solved.complete)return {...solved,strings:[solved.pixels],exposedPaths:[] as number[]}
   }
   const unused=new Map(source.map(p=>[cellKey(p),p])),chains:Pixel[][]=[]
   const rows=[...new Set(source.map(p=>p.y))].sort((a,b)=>a-b)
@@ -105,7 +106,7 @@ export function spriteWiring(source:Pixel[],mode:'rows'|'compact'='compact',supp
   }
   let id=0
   const strings=chains.map(chain=>chain.map(p=>({...p,id:++id})))
-  return {pixels:strings.flat(),strings,paths:strings.flatMap(chain=>chain.slice(1).map((p,i)=>[chain[i],p])),complete:true}
+  return stitchSeries(strings,strings.flatMap(chain=>chain.slice(1).map((p,i)=>[chain[i],p])),support)
 }
 
 // Finish each row, then connect along the boundary behind occupied plastic.
