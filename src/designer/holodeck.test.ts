@@ -1,6 +1,7 @@
 import {expect,it} from 'vitest'
 import * as THREE from 'three'
 import {createHolodeck} from './holodeck'
+import {LineSegments2} from 'three/addons/lines/LineSegments2.js'
 it('builds six inward-facing room surfaces outside the printable model',()=>{
  const room=createHolodeck(500)
  expect(room.group.children.map(c=>c.name)).toEqual(['Rear wall','Front wall','Left wall','Right wall','Floor','Ceiling'])
@@ -28,7 +29,7 @@ it('keeps the deck touching the lowest model point at every zoom distance',()=>{
 it('renders every room surface behind the prop without depth occlusion',()=>{
  const room=createHolodeck(500)
  for(const panel of room.group.children){
-  const [wall,grid]=panel.children as [THREE.Mesh,THREE.LineSegments]
+  const [wall,grid]=panel.children as [THREE.Mesh,LineSegments2]
   for(const surface of [wall,grid]){
    const material=surface.material as THREE.Material
    expect(material.depthWrite).toBe(false)
@@ -37,6 +38,18 @@ it('renders every room surface behind the prop without depth occlusion',()=>{
    expect(surface.renderOrder).toBeLessThan(0)
   }
   expect(wall.renderOrder).toBeLessThan(grid.renderOrder)
+ }
+ room.dispose()
+})
+it('uses thicker yellow screen-space grid lines on every room face',()=>{
+ const room=createHolodeck(500)
+ for(const panel of room.group.children){
+  const wire=panel.children[1] as LineSegments2
+  expect(wire).toBeInstanceOf(LineSegments2)
+  expect(wire.material.linewidth).toBe(1.8)
+  expect(wire.material.worldUnits).toBe(false)
+  expect(wire.material.color.getHex()).toBe(0xbfa12e)
+  expect(wire.material.toneMapped).toBe(false)
  }
  room.dispose()
 })

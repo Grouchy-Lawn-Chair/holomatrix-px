@@ -1,4 +1,7 @@
 import * as THREE from 'three'
+import {LineSegments2} from 'three/addons/lines/LineSegments2.js'
+import {LineSegmentsGeometry} from 'three/addons/lines/LineSegmentsGeometry.js'
+import {LineMaterial} from 'three/addons/lines/LineMaterial.js'
 
 /** Six real room planes. Decorative only: excluded from picking, fit and exports. */
 export function createHolodeck(span:number){
@@ -9,9 +12,10 @@ export function createHolodeck(span:number){
   const p=-extent+2*extent*i/divisions
   points.push(-extent,p,0,extent,p,0,p,-extent,0,p,extent,0)
  }
- const grid=new THREE.BufferGeometry();grid.setAttribute('position',new THREE.Float32BufferAttribute(points,3))
- // Pre-blended amber keeps grid lines in the opaque background queue too.
- const lines=new THREE.LineBasicMaterial({color:0x332b1f,depthWrite:false,depthTest:false})
+ const grid=new LineSegmentsGeometry();grid.setPositions(points)
+ // Screen-space strokes stay visibly thicker on WebGL implementations where
+ // ordinary lineWidth is limited to one pixel. Remain an opaque background.
+ const lines=new LineMaterial({color:0xbfa12e,linewidth:1.8,worldUnits:false,depthWrite:false,depthTest:false,toneMapped:false})
  const wallGeometry=new THREE.PlaneGeometry(extent*2,extent*2)
  const wallMaterial=new THREE.MeshBasicMaterial({color:0x080d15,side:THREE.FrontSide,depthWrite:false,depthTest:false})
  const faces=[
@@ -24,7 +28,7 @@ export function createHolodeck(span:number){
  ]
  for(const face of faces){
   const panel=new THREE.Group();panel.name=face.name;panel.position.set(...face.p as [number,number,number]);panel.rotation.set(...face.r as [number,number,number])
-  const wall=new THREE.Mesh(wallGeometry,wallMaterial),wire=new THREE.LineSegments(grid,lines)
+  const wall=new THREE.Mesh(wallGeometry,wallMaterial),wire=new LineSegments2(grid,lines)
   // Render the entire room as a background pass, before printable geometry.
   // Opaque walls must never write depth in front of the prop during an orbit.
   wall.renderOrder=-1000;wire.renderOrder=-999
